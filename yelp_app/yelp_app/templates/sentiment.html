@@ -1,0 +1,74 @@
+{% macro bolden(text, adjective) %}
+{% set word_list = text.split(" ") %}
+{% for word in word_list %}
+	{% if adjective.strip() in word.strip().lower()  %}
+		<strong>{{word}}</strong>
+	{% else %}
+		{{word}}
+	{% endif %}
+{% endfor%}
+{% endmacro %}
+
+
+{% extends "layout.html" %}
+{% block body %}
+		
+	<h3>Restaurant: {{resto['name']}}</h3> 
+	<h3>Stars: {{resto['stars']}} </h3>
+	<h3># Reviews: {{resto['reviews']}} </h3>
+	<form id="sentiment-form" action="{{ url_for('similar_sentiment') }}" method="post">
+		{% for sentiment_type in sentiments %}	
+		<table class="sentiment" >
+			<tr>
+				<th colspan="2"> {{ sentiment_type[0]['sentiment_type'].replace("_", " ") }} </th>
+			</tr>
+			{% for feature in sentiment_type %}
+			<tr>
+				<td style="width:10%"><input type=checkbox name=search_by value="{{ (feature['sentiment_type'],feature['feature_name']) }}"></td>
+				<td style="width:90%">
+					<button type="button" class="accordion">{{feature['feature_name']}} ( {{ feature['max_weight']}} )</button>
+					<table class="panel">
+						{% for adjectives in (feature['adjs']) %}							
+							{% for reviewlet in adjectives['text'][:2] %}
+								{% if loop.index0 == 0 %}
+								<tr>
+									<th rowspan={{[adjectives['text'][:2]|length,2]|min}}>{{adjectives['adj']}}</th>
+									<td>{{bolden(reviewlet, adjectives['adj'])}}</td>
+								</tr>
+								{% else %}				
+								<tr>
+									<td>{{ bolden(reviewlet, adjectives['adj']) }}</td>						
+			  					</tr>
+			  					{% endif %}
+			  				{% endfor %}
+			  			{% endfor %}					
+					</table>
+				</td>
+			</tr>
+			{% endfor %}	
+		</table>	
+		{% endfor %}
+		<input type="submit" value="Find Similar Sentiments!">
+	</form>
+	{% block javascript %}
+	<script>
+		var acc = document.getElementsByClassName("accordion");
+		var i;
+		for (i = 0; i < acc.length; i++) {
+			acc[i].addEventListener("click", function() {
+				this.classList.toggle("active");
+				var panel = this.nextElementSibling;
+				if (panel.style.display === "block") {
+				    panel.style.display = "none";
+				} else {
+				    panel.style.display = "block";
+				}
+			});
+		}	
+				
+	</script>
+	{% endblock %}				
+{% endblock %}
+
+
+

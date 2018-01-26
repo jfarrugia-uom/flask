@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block body %}
+	<h2>Results for:</h2>
+		<ul>
+			{% for criterion in sentiment_criteria %}
+			<li><h3>{{ criterion[1] }} ( {{criterion[0]}} )</h3></li>
+			{% endfor %}
+		</ul>	
+		<table class="main">
+		  <tr>
+			<th>Name</th>			
+		  </tr>	  		
+		  {% for row in results %}
+		  <tr>
+			 <td><a href="{{ url_for('sentiment', restaurant=row['b.id']) }}">{{ row['b.name'] }}</a></td>
+		  </tr>
+		  {% endfor %}
+		</table>  		
+{% endblock %}

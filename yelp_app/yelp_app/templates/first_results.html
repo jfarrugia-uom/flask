@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block body %}
+	<h2>Results for "{{search_string}}"</h2>
+		<table class="main">
+		  <tr>
+			<th>Name</th>
+			<th>Cos Distance</th>
+		  </tr>	  		
+		  {% for row in results %}
+		  <tr>
+			 <td><a href="{{ url_for('sentiment', restaurant=row[1]) }}">{{ row[0] }}
+			 {% if row[3] %}
+			 (*)
+			 {% endif %}			 
+			 </a></td>
+			 <td>{{ row[2] }}</td>
+		  </tr>
+		  {% endfor %}
+		</table>  		
+{% endblock %}
